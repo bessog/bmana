@@ -1,0 +1,13 @@
+---
+applications:
+- name: bmana
+  memory: 256M
+  instances: 1
+  url: bmana.cfapps.io
+  path: .
+  services:
+    mongolab-bserv:
+      label: mongolab
+      provider: mongolab
+      version: n/a
+      plan: sandbox
