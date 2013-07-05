@@ -1,0 +1,5 @@
+*.log
+*.lock
+database.yml
+auth.yml
+.Apple*
