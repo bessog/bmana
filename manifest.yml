@@ -1,7 +1,7 @@
 ---
 applications:
 - name: bmana
-  memory: 256M
+  memory: 128M
   instances: 1
   url: bmana.cfapps.io
   path: .
