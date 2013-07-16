@@ -1,0 +1,30 @@
+#header {}
+
+#content {}
+
+#searchparams {}
+
+#daForm {}
+#active {}
+#typeselect {}
+#customfields {}
+#search {}
+
+#banners {}
+#bannerrecords {}
+
+#footer {}
+
+.formTable {
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+}
+
+.formTable .firstTd {
+  width: 10%;
+}
+
+.formTable .secondTd {
+  width: 100%;
+}
