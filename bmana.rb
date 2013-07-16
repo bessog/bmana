@@ -29,7 +29,6 @@ class BManaApp < Sinatra::Base
   get '/' do
     if cf then authenticate end
     File.read(File.join('public', 'index.html'))
-    #haml :index
   end
 
   get '/typeselect' do
@@ -52,25 +51,36 @@ class BManaApp < Sinatra::Base
     coll = db.collection("Banners")
     content_type :json
 
-    if params[:active] then active = true
-    else active = false end
+    if params[:active] then active = 'true'
+    else active = 'false' end
 
-    fields = {}
+    fields = ''
 
     params[:fields].each do |k,v|
-      if v != '' then fields[k] = v end
+      if v != '' then fields = fields + ", 'fields." + k + "' => '" + v + "'" end
     end
-
-    query = {'active' => active, 'type' => params[:typeselect], 'fields' => fields}
+    
+    #TODO ... frail security 
+    query = eval("{'active' => " + active + ", 'type' => params[:typeselect]" + fields + "}")
     rows = coll.find(query).to_a
     numrows = rows.count
 
     {
+      :query => query, 
       :message => 'OK', 
       :numrows => numrows,
       :records => rows
     }.to_json
 
+  end
+
+  put '/banner/:id' do
+
+    {
+      :message => 'OK',
+      :params => params.to_s,
+      :reqbody => request.body.read
+    }.to_json
   end
 
 end

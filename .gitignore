@@ -1,5 +1,6 @@
 *.log
 *.lock
+manifest.yml
 database.yml
 auth.yml
 .Apple*
