@@ -3,3 +3,4 @@
 database.yml
 auth.yml
 .Apple*
+.DS_*

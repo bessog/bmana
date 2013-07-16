@@ -1,4 +1,5 @@
 require 'yaml'
+require 'json'
 require 'cf-runtime'
 require 'sinatra'
 require 'sinatra/base'
