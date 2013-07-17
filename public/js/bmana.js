@@ -21,11 +21,21 @@ var saveBanner = function(id) {
     type: "PUT",
     url: '/banner/'+id,
     contentType: "application/json",
-    data: data
+    data: data,
+    success: function(ret) {
+      $('#active_'+id).prop('checked', ret.record[0].active);
+      $('#body_'+id).val(ret.record[0].body);
+    }
   });
 }
 
 $(document).ready(function () {
+
+  $.getJSON("/getdefaultstyles", function(data) {
+    for(var i = 0; i < data.length; i++) {
+      $("body").prepend(data[i].css);
+    }
+  });
 
   $.getJSON("/typeselect", function(data) {
     for(var i = 0; i < data.length; i++) {
@@ -40,7 +50,6 @@ $(document).ready(function () {
       }
     });
   });
-
 
   $('#search').click(function() {
     $("#bannerrecords").empty();
