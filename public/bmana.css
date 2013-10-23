@@ -11,7 +11,9 @@
 #search {}
 
 #banners {}
-#bannerrecords {}
+#bannerrecords {
+  width: 800px;
+}
 
 #footer {}
 

@@ -14,6 +14,7 @@ class BManaApp < Sinatra::Base
   else
     puts "Running local"
     dbconf = dbyml["local"] 
+    #dbconf = dbyml["cloudfoundry"]
     cf = false
   end
 
@@ -50,7 +51,11 @@ class BManaApp < Sinatra::Base
     content_type :json
     coll = db.collection("Banners")
     row = coll.find_one({'type'=>params[:type]})
-    row['fields'].keys.to_json
+    if row['fields'] then
+      row['fields'].keys.to_json
+    else
+      {}.to_json
+    end
   end
 
   get '/list' do
@@ -58,13 +63,15 @@ class BManaApp < Sinatra::Base
     coll = db.collection("Banners")
     content_type :json
 
-    if params[:active] then active = 'YES'
-    else active = 'NO' end
+    if params[:active] then active = true
+    else active = false end
 
     fields = ''
 
-    params[:fields].each do |k,v|
-      if v != '' then fields = fields + ", 'fields." + k + "' => '" + v + "'" end
+    if params[:fields] then
+      params[:fields].each do |k,v|
+        if v != '' then fields = fields + ", 'fields." + k + "' => '" + v + "'" end
+      end
     end
 
     #TODO ... frail security

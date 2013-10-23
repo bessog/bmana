@@ -31,6 +31,8 @@ var saveBanner = function(id) {
 
 $(document).ready(function () {
 
+  $('.fixedparams').hide();
+
   $.getJSON("/getdefaultstyles", function(data) {
     for(var i = 0; i < data.length; i++) {
       $("body").prepend(data[i].css);
@@ -44,11 +46,14 @@ $(document).ready(function () {
   });
 
   $('#typeselect').change(function() {
+    $("#customfields").empty();
+    $("#bannerrecords").empty();
     $.getJSON("/customfields/" + $(this).val(), function(data) {
       for(var i = 0; i < data.length; i++) {
         $("#customfields").append('<tr><td>' + data[i] + '</td><td><input type="text" name="fields[' + data[i] + ']"></td></tr>');
       }
     });
+    $('.fixedparams').show();
   });
 
   $('#search').click(function() {
@@ -60,7 +65,6 @@ $(document).ready(function () {
         if(data.records[i].active) checked = 'checked'; else checked = '';
         $("#bannerrecords").append(
           '<tr class="trTitle" id="trtitle_' + bid + '">' +
-            '<td>' + data.records[i].fields.title + '</td>' +
             '<td>' + data.records[i].body + '</td>' +
             '<td><input type="button" onclick="javascript:toggleEdit(\''+bid+'\')"></td>' +
           '</tr>' +
