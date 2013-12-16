@@ -32,11 +32,18 @@ class BManaApp < Sinatra::Base
     File.read(File.join('public', 'index.html'))
   end
 
-  get '/getdefaultstyles' do
+  get '/styleselect' do
     if cf then authenticate end
     content_type :json
     coll = db.collection("Styles")
-    coll.find({}).to_a.to_json
+    coll.distinct("site").to_json
+  end
+
+  get '/styleselect/:site' do
+    if cf then authenticate end
+    content_type :json
+    coll = db.collection("Styles")
+    coll.find_one({'site'=>params[:site]}, {:fields=>['css']}).to_json
   end
 
   get '/typeselect' do
@@ -63,8 +70,8 @@ class BManaApp < Sinatra::Base
     coll = db.collection("Banners")
     content_type :json
 
-    if params[:active] then active = true
-    else active = false end
+    if params[:active] then active = 'true'
+    else active = 'false' end
 
     fields = ''
 
@@ -75,7 +82,7 @@ class BManaApp < Sinatra::Base
     end
 
     #TODO ... frail security
-    query = eval("{'active' => '" + active + "', 'type' => params[:typeselect]" + fields + "}")
+    query = eval("{'active' => " + active + ", 'type' => params[:typeselect]" + fields + "}")
     rows = coll.find(query).to_a
     numrows = rows.count
 
@@ -95,7 +102,7 @@ class BManaApp < Sinatra::Base
 
     vars = Rack::Utils.parse_nested_query request.body.read
 
-    if vars['active'] then active = 'YES' else active = 'NO' end
+    if vars['active'] == 'true' then active = true else active = false end
 
     coll.update({"_id" => BSON::ObjectId(params[:id].to_s)}, {"$set" => {"active" => active, "body" => vars['body']}})
     ret = coll.find("_id" => BSON::ObjectId(params[:id].to_s))

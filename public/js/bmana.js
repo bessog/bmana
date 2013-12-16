@@ -16,7 +16,7 @@ var toggleEdit = function(id) {
 }
 
 var saveBanner = function(id) {
-  data = {'active': $('#active_'+id).val(), 'body': $('#body_'+id).val()};
+  data = {'active': $('#active_'+id).is(':checked'), 'body': $('#body_'+id).val()};
   $.ajax({
     type: "PUT",
     url: '/banner/'+id,
@@ -33,10 +33,21 @@ $(document).ready(function () {
 
   $('.fixedparams').hide();
 
-  $.getJSON("/getdefaultstyles", function(data) {
+  $.getJSON("/styleselect/www.spring.io", function(data) {
+    $("body").prepend("<style>"+data.css+"</style>");
+  });
+
+  $.getJSON("/styleselect", function(data) {
     for(var i = 0; i < data.length; i++) {
-      $("body").prepend(data[i].css);
+      $("#styleselect").append('<option>' + data[i] + '</option>');
     }
+  });
+
+  $('#styleselect').change(function() {
+    $.getJSON("/styleselect/" + $(this).val(), function(data) {
+      $("style").remove();
+      $("body").prepend("<style>"+data.css+"</style>");
+    });
   });
 
   $.getJSON("/typeselect", function(data) {
