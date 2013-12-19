@@ -29,7 +29,12 @@ class BManaApp < Sinatra::Base
 
   get '/' do
     if cf then authenticate end
-    File.read(File.join('public', 'index.html'))
+    File.read(File.join('public', 'banners.html'))
+  end
+
+  get '/styles' do
+    if cf then authenticate end
+    File.read(File.join('public', 'styles.html'))
   end
 
   get '/styleselect' do
@@ -39,11 +44,58 @@ class BManaApp < Sinatra::Base
     coll.distinct("site").to_json
   end
 
-  get '/styleselect/:site' do
+  get '/style/:site' do
     if cf then authenticate end
     content_type :json
     coll = db.collection("Styles")
-    coll.find_one({'site'=>params[:site]}, {:fields=>['css']}).to_json
+    if params[:site] == 'default' then query = eval("{}")
+    else query =  eval("{'site'=>'"+params[:site]+"'}")
+    end
+
+    coll.find_one(query, {:fields=>['css']}).to_json
+  end
+
+  put '/style/:site' do
+    if cf then authenticate end
+    coll = db.collection("Styles")
+    content_type :json
+
+    vars = Rack::Utils.parse_nested_query request.body.read
+
+    coll.update({"site" => params[:site].to_s}, {"$set" => {"css" => vars['css']}})
+    ret = coll.find("site" => params[:site].to_s)
+
+    {
+      :message => 'OK',
+      :record => ret.to_a
+    }.to_json
+  end
+
+  post '/style/:site' do
+    if cf then authenticate end
+    coll = db.collection("Styles")
+    content_type :json
+
+    vars = Rack::Utils.parse_nested_query request.body.read
+
+    if vars['active'] == 'true' then active = true else active = false end
+
+    coll.insert({"site" => params[:site].to_s}, {"$set" => {"active" => active, "site" => params[:site].to_s, "css" => vars['css'].to_s}})
+    ret = coll.find("site" => params[:site].to_s)
+
+    {
+      :message => 'OK',
+      :record => ret.to_a
+    }.to_json
+  end
+
+  get '/banner' do
+    if cf then authenticate end
+    coll = db.collection("Banners")
+    content_type :json
+
+    active = 'true'
+    coll.find_one({'active' => true}).to_json
   end
 
   get '/typeselect' do
