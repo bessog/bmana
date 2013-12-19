@@ -18,7 +18,7 @@
 
  <div class="banner"></div>
  <div id="style">
-  <input type="button" class="submit" value="save"/>
+  <input type="button" class="button" value="save" onclick="if (confirm('Are you sure that you want to save this global style?')) { saveStyle() }" />
   <br/>
   <textarea name="css" id="css" style="width: 740px; height: 200px;"></textarea>
   <br/>
