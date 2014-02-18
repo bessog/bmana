@@ -7,7 +7,10 @@
 </head>
 <body>
 
-<div id="header">BMANA banners</div>
+<div id="header">
+ <span id="envspan"></span>
+ <span id="titlespan">BMANA banners</span>
+</div>
 
 <div id="content">
   <table>
@@ -18,12 +21,13 @@
           <form id="daForm">
             <span class="fixedparams"><label for="active">active:</label> <input type="checkbox" name="active" id="active" checked/></span><br/>
             <label for="typeselect">type:</label> <select name="typeselect" id="typeselect"><option value="">...select a type</option></select><br/>
-            <label for="styleselect">style:</label> <select name="styleselect" id="styleselect"><option value="">...select a style</option></select><br/>
+            <label for="styleselect">style:</label> <select name="styleselect" id="styleselect"></select><br/>
             <table id="customfields"></table>
             <span class="fixedparams"><input type="button" value="search" id="search"/></span>
           </form>
         </div>
-      </td><td valign="top">
+      </td>
+      <td valign="top">
         <div id="banners">
           <table id="bannerrecords"></table>
         </div>

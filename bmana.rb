@@ -5,6 +5,7 @@ class BManaApp < Sinatra::Base
   set :public_folder, 'public'
 
   dbyml = YAML.load_file('database.yml')
+  defaults = YAML.load_file('defaults.yml')
 
   if ENV['VCAP_SERVICES'] then
     register Sinatra::GoogleAuth
@@ -37,17 +38,27 @@ class BManaApp < Sinatra::Base
     File.read(File.join('public', 'styles.html'))
   end
 
-  get '/styleselect' do
+  get '/styleselect/?:type?' do
     if cf then authenticate end
     content_type :json
-    coll = db.collection("Styles")
-    coll.distinct("site").to_json
+    coll = db.collection("Sites")
+    if !params[:type] || params[:type].to_s == 'default' then
+      type = defaults['type']
+    else
+      type = params[:type].to_s
+    end
+    ret = coll.find({'type'=>type}, {:fields=>['site']})
+
+    {
+      :message => 'OK',
+      :records => ret.to_a
+    }.to_json
   end
 
   get '/style/:site' do
     if cf then authenticate end
     content_type :json
-    coll = db.collection("Styles")
+    coll = db.collection("Sites")
     if params[:site] == 'default' then query = eval("{}")
     else query =  eval("{'site'=>'"+params[:site]+"'}")
     end
@@ -57,7 +68,7 @@ class BManaApp < Sinatra::Base
 
   put '/style/:site' do
     if cf then authenticate end
-    coll = db.collection("Styles")
+    coll = db.collection("Sites")
     content_type :json
 
     vars = Rack::Utils.parse_nested_query request.body.read
@@ -67,25 +78,25 @@ class BManaApp < Sinatra::Base
 
     {
       :message => 'OK',
-      :record => ret.to_a
+      :records => ret.to_a
     }.to_json
   end
 
   post '/style/:site' do
     if cf then authenticate end
-    coll = db.collection("Styles")
+    coll = db.collection("Sites")
     content_type :json
 
     vars = Rack::Utils.parse_nested_query request.body.read
 
-    if vars['active'] == 'true' then active = true else active = false end
+    active = true
 
     coll.insert({"site" => params[:site].to_s}, {"$set" => {"active" => active, "site" => params[:site].to_s, "css" => vars['css'].to_s}})
     ret = coll.find("site" => params[:site].to_s)
 
     {
       :message => 'OK',
-      :record => ret.to_a
+      :records => ret.to_a
     }.to_json
   end
 
@@ -98,10 +109,10 @@ class BManaApp < Sinatra::Base
     coll.find_one({'active' => true}).to_json
   end
 
-  get '/typeselect' do
+  get '/typeselect/:what' do
     if cf then authenticate end
     content_type :json
-    coll = db.collection("Banners")
+    coll = db.collection(params[:what])
     coll.distinct('type').to_json
   end
 
@@ -161,7 +172,7 @@ class BManaApp < Sinatra::Base
 
     {
       :message => 'OK',
-      :record => ret.to_a
+      :records => ret.to_a
     }.to_json
   end
 

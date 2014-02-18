@@ -3,5 +3,6 @@
 manifest.yml
 database.yml
 auth.yml
+defaults.yml
 .Apple*
 .DS_*

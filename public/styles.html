@@ -7,11 +7,15 @@
 </head>
 <body>
 
-<div id="header">BMANA styles</div>
+<div id="header">
+ <span id="envspan"></span>
+ <span id="titlespan">BMANA banners</span>
+</div>
 
 <div id="content">
 
  <a href="/">banners</a><br/>
+ <label for="typeselect">type:</label> <select name="typeselect" id="typeselect"></select><br/>
  <label for="styleselect">style:</label> <select name="styleselect" id="styleselect"></select>
 
  <br/>
@@ -22,6 +26,9 @@
   <br/>
   <textarea name="css" id="css" style="width: 740px; height: 200px;"></textarea>
   <br/>
+
+  <input type="text" value="" name="newcsssite" id="newcsssite" />
+  <input type="button" class="button" value="create new" onclick="if (checkDupe() && confirm('Are you sure that you want to create a new global style?')) { newStyle() }" />
  </div>
 
 </div>
