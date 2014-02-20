@@ -82,6 +82,8 @@ class BManaApp < Sinatra::Base
     }.to_json
   end
 
+=begin
+# Too early
   post '/style/:site' do
     if cf then authenticate end
     coll = db.collection("Sites")
@@ -99,6 +101,7 @@ class BManaApp < Sinatra::Base
       :records => ret.to_a
     }.to_json
   end
+=end
 
   get '/banner' do
     if cf then authenticate end

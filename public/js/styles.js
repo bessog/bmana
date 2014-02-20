@@ -15,6 +15,7 @@ var saveStyle = function(site) {
   });
 }
 
+/* Too early
 var newStyle = function(site) {
   data = {'css': $('#css').val(), 'typeselect': $('#').val()};
   $.ajax({
@@ -42,6 +43,7 @@ var checkDupe = function() {
   });
   return newcss;
 }
+*/
 
 $(document).ready(function () {
 
