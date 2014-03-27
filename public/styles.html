@@ -15,21 +15,16 @@
 <div id="content">
 
  <a href="/">banners</a><br/>
- <label for="typeselect">type:</label> <select name="typeselect" id="typeselect"></select><br/>
- <label for="styleselect">style:</label> <select name="styleselect" id="styleselect"></select>
+ <label for="siteselect">destination website:</label> <select name="siteselect" id="siteselect"><option>...select</option></select><br/>
+ <label for="typeselect">banner type:</label> <select name="typeselect" id="typeselect"><option>...select</option></select>
 
  <br/>
 
  <div class="banner"></div>
  <div id="style">
-  <input type="button" class="button" value="save" onclick="if (confirm('Are you sure that you want to save this global style?')) { saveStyle() }" />
+  <input id="savebutton" type="button" class="button" value="save" onclick="if (confirm('Are you sure that you want to save this global style?')) { saveStyle() }" />
   <br/>
   <textarea name="css" id="css" style="width: 740px; height: 200px;"></textarea>
-<!-- Too early
-  <br/>
-  <input type="text" value="" name="newcsssite" id="newcsssite" />
-  <input type="button" class="button" value="create new" onclick="if (checkDupe() && confirm('Are you sure that you want to create a new global style?')) { newStyle() }" />
--->
  </div>
 
 </div>

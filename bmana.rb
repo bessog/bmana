@@ -38,42 +38,58 @@ class BManaApp < Sinatra::Base
     File.read(File.join('public', 'styles.html'))
   end
 
-  get '/styleselect/?:type?' do
+  # returns list of all the site names
+  get '/siteselect' do
     if cf then authenticate end
     content_type :json
     coll = db.collection("Sites")
-    if !params[:type] || params[:type].to_s == 'default' then
-      type = defaults['type']
+    ret = coll.find({},{:fields=>['site']})
+
+    {
+      :message => 'OK',
+      :records => ret.to_a
+    }.to_json
+  end
+
+  # returns list of style names in a site
+  get '/typeselect/:site' do
+    if cf then authenticate end
+    content_type :json
+    coll = db.collection("Sites")
+    ret = coll.find_one({"site"=>params[:site]})
+    {
+      :message => 'OK',
+      :records => ret['styles'].keys
+    }.to_json
+  end
+
+  # returns a css style
+  get '/style/:site/:type' do
+    if cf then authenticate end
+    content_type :json
+    coll = db.collection("Sites")
+    if params[:site] == 'default' then
+      query = eval("{}")
     else
-      type = params[:type].to_s
+      query =  eval("{'site'=>'"+params[:site]+"'}")
     end
-    ret = coll.find({'type'=>type}, {:fields=>['site']})
 
+    ret = coll.find_one(query)
+    
     {
       :message => 'OK',
-      :records => ret.to_a
+      :records => ret['styles'][params[:type]]
     }.to_json
   end
 
-  get '/style/:site' do
-    if cf then authenticate end
-    content_type :json
-    coll = db.collection("Sites")
-    if params[:site] == 'default' then query = eval("{}")
-    else query =  eval("{'site'=>'"+params[:site]+"'}")
-    end
-
-    coll.find_one(query, {:fields=>['css']}).to_json
-  end
-
-  put '/style/:site' do
+  put '/style/:site/:type' do
     if cf then authenticate end
     coll = db.collection("Sites")
     content_type :json
 
     vars = Rack::Utils.parse_nested_query request.body.read
 
-    coll.update({"site" => params[:site].to_s}, {"$set" => {"css" => vars['css']}})
+    coll.update({"site" => params[:site].to_s}, {"$set" => {"styles."+params[:type] => vars['css']}})
     ret = coll.find("site" => params[:site].to_s)
 
     {
@@ -82,41 +98,13 @@ class BManaApp < Sinatra::Base
     }.to_json
   end
 
-=begin
-# Too early
-  post '/style/:site' do
-    if cf then authenticate end
-    coll = db.collection("Sites")
-    content_type :json
-
-    vars = Rack::Utils.parse_nested_query request.body.read
-
-    active = true
-
-    coll.insert({"site" => params[:site].to_s}, {"$set" => {"active" => active, "site" => params[:site].to_s, "css" => vars['css'].to_s}})
-    ret = coll.find("site" => params[:site].to_s)
-
-    {
-      :message => 'OK',
-      :records => ret.to_a
-    }.to_json
-  end
-=end
-
-  get '/banner' do
+  get '/banner/:type' do
     if cf then authenticate end
     coll = db.collection("Banners")
     content_type :json
 
     active = 'true'
-    coll.find_one({'active' => true}).to_json
-  end
-
-  get '/typeselect/:what' do
-    if cf then authenticate end
-    content_type :json
-    coll = db.collection(params[:what])
-    coll.distinct('type').to_json
+    coll.find_one({'active' => true, 'type' => params[:type]}).to_json
   end
 
   get '/customfields/:type' do
