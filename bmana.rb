@@ -68,10 +68,9 @@ class BManaApp < Sinatra::Base
     if cf then authenticate end
     content_type :json
     coll = db.collection("Sites")
-    if params[:site] == 'default' then
-      query = eval("{}")
-    else
-      query =  eval("{'site'=>'"+params[:site]+"'}")
+    query = {}
+    if params[:site] != 'default' then
+      query['site'] = params[:site]
     end
 
     ret = coll.find_one(query)
@@ -103,7 +102,6 @@ class BManaApp < Sinatra::Base
     coll = db.collection("Banners")
     content_type :json
 
-    active = 'true'
     coll.find_one({'active' => true, 'type' => params[:type]}).to_json
   end
 
@@ -124,19 +122,19 @@ class BManaApp < Sinatra::Base
     coll = db.collection("Banners")
     content_type :json
 
-    if params[:active] then active = 'true'
-    else active = 'false' end
+    query = {}
 
-    fields = ''
+    if params[:active] then active = true
+    else active = false end
+    query['active'] = active
 
     if params[:fields] then
       params[:fields].each do |k,v|
-        if v != '' then fields = fields + ", 'fields." + k + "' => '" + v + "'" end
+        if v != '' then query["fields." + k] = v end
       end
     end
 
-    #TODO ... frail security
-    query = eval("{'active' => " + active + ", 'type' => params[:typeselect]" + fields + "}")
+    query['type'] = params[:typeselect]
     rows = coll.find(query).to_a
     numrows = rows.count
 
