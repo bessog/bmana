@@ -78,11 +78,14 @@ $(document).ready(function () {
 	});
 
 	$('#siteselect').change(function() {
+		$("#customfields").empty();
+        $("#bannerrecords").empty();
 		$("#typeselect").empty();
 		$("#typeselect").append('<option>... select</option>');
 		$.getJSON("/typeselect/"+$(this).val(), function(data) {
+            var selected ='';
 			for(var i = 0; i < data.records.length; i++) {
-				$("#typeselect").append('<option>' + data.records[i] + '</option>');
+         		$("#typeselect").append('<option>' + data.records[i] + '</option>');
 			}
 		});
 		$('#typeselect').prop('disabled', '');
@@ -91,16 +94,8 @@ $(document).ready(function () {
   $('#typeselect').change(function() {
     $("#customfields").empty();
     $("#bannerrecords").empty();
-    $.getJSON("/typeselect/"+$('#siteselect').val(), function(data) {
-      selected = '';
-      for(var i = 0; i < data.records.length; i++) {
-        if(i == 0) {
-          getStyle(data.records[i].site, $(this).val());
-          selected = 'selected';
-        }
-        $("#typeselect").append('<option '+selected+'>' + data.records[i].site + '</option>');
-      }
-    });
+    getStyle($('#siteselect').val(),$(this).val());
+
     $.getJSON("/customfields/" + $(this).val(), function(data) {
       for(var i = 0; i < data.length; i++) {
         $("#customfields").append('<tr><td>' + data[i] + '</td><td><input type="text" name="fields[' + data[i] + ']"></td></tr>');
