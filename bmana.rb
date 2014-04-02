@@ -119,10 +119,22 @@ class BManaApp < Sinatra::Base
 
   get '/list' do
     if cf then authenticate end
-    coll = db.collection("Banners")
     content_type :json
 
     query = {}
+
+    coll = db.collection("Sites")
+
+    site = coll.find_one({"site"=>params[:siteselect]})
+    if site["filters"] then
+      if site["filters"][params[:typeselect]] then
+        YAML.load(site["filters"][params[:typeselect]]).each do |k,v|
+          query[k] = v
+        end
+      end
+    end
+
+    coll = db.collection("Banners")
 
     if params[:active] then active = true
     else active = false end
